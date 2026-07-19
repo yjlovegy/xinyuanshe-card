@@ -75,6 +75,7 @@
 </template>
 
 <script setup lang="ts">
+import { useIDBKeyval } from '@vueuse/integrations/useIDBKeyval';
 import { useAppActions } from '../composables/useAppActions';
 import { useDataStore } from '../store';
 
@@ -87,7 +88,21 @@ const bodyParts = ['樱唇', '双乳', '小穴', '玉足'] as const;
 const wardrobe = computed(() => Object.entries(data.心愿社.衣柜));
 const inventory = computed(() => Object.entries(data.心愿社.道具库存));
 
-const { data: avatarSource } = useIDBKeyval<string>('心愿社:full-body-avatar', '');
+const sessionAvatarSource = ref('');
+const avatarStorageUnavailable = ref(false);
+const { data: storedAvatarSource } = useIDBKeyval<string>('心愿社:full-body-avatar', '', {
+  onError(error) {
+    avatarStorageUnavailable.value = true;
+    console.warn('[心愿社] 无法访问 IndexedDB，全身像将在本次会话中临时保存。', error);
+  },
+});
+const avatarSource = computed({
+  get: () => (avatarStorageUnavailable.value ? sessionAvatarSource.value : storedAvatarSource.value),
+  set: value => {
+    sessionAvatarSource.value = value;
+    if (!avatarStorageUnavailable.value) storedAvatarSource.value = value;
+  },
+});
 const { open, onChange } = useFileDialog({ accept: 'image/*', multiple: false });
 const showUrl = ref(false);
 const urlInput = ref('');
