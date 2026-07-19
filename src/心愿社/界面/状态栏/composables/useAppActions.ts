@@ -113,7 +113,7 @@ export function useAppActions(isLatest: Ref<boolean>) {
     if (!requireLatest()) return;
     const task = state.心愿社.我发布的[taskId];
     if (!task) return;
-    if (Object.keys(task.接取者).length > 0) return toastr.warning('已有接取者，请在剧情中协商处理。');
+    if (Object.keys(task.接取者).length > 0) return toastr.warning('已有接取者，请先与接取者协商处理。');
     state.账号.爱心.托管 -= task.托管爱心;
     state.账号.爱心.可用 += task.托管爱心;
     if (state.心愿社.任务大厅[taskId]) state.心愿社.任务大厅[taskId].状态 = '已取消';
@@ -144,12 +144,12 @@ export function useAppActions(isLatest: Ref<boolean>) {
   function submitProof(taskId: string, summary: string) {
     if (!requireLatest() || !summary.trim()) return;
     const task = state.心愿社.我接取的[taskId];
-    if (!task || task.任务状态 !== '可提交') return toastr.warning('需要先在剧情中完成任务，才可以提交证明摘要。');
+    if (!task || task.任务状态 !== '可提交') return toastr.warning('需要先完成任务，才可以提交证明摘要。');
     task.证明摘要 = summary.trim();
     task.审核状态 = '审核中';
     task.任务状态 = '审核中';
-    log(`为任务“${task.标题}”提交剧情证明摘要：${summary.trim()}`);
-    notify('任务', '证明已提交', '平台只保存剧情生成的类型与摘要，不保存真实文件。');
+    log(`为任务“${task.标题}”提交证明摘要：${summary.trim()}`);
+    notify('任务', '证明已提交', '平台只保存填写的材料类型与摘要，不保存真实文件。');
     toastr.success('证明摘要已提交。');
     return;
   }
@@ -185,7 +185,7 @@ export function useAppActions(isLatest: Ref<boolean>) {
 
   function executeTask(taskId: string) {
     const task = state.心愿社.我接取的[taskId];
-    if (task) return narrative(`[心愿社剧情行动] 我准备执行任务“${task.标题}”（任务ID：${taskId}）。请结合当前时间、地点、穿着、任务要求和已发生剧情继续叙事，并据实更新任务进度与人物状态。`);
+    if (task) return narrative(`[心愿社行动] 我准备执行任务“${task.标题}”（任务ID：${taskId}）。请结合当前时间、地点、穿着、任务要求和已发生的事件继续叙事，并据实更新任务进度与人物状态。`);
     return;
   }
 
@@ -273,7 +273,7 @@ export function useAppActions(isLatest: Ref<boolean>) {
 
   function equipItem(itemId: string) {
     const item = state.心愿社.衣柜[itemId];
-    if (item) return narrative(`[心愿社剧情行动] 我从衣柜取出“${item.名称}”，准备换到${item.部位}槽位。请描写实际换装过程，并在行动完成后据实更新六个衣物槽；不要仅因点击按钮就跳过剧情。`);
+    if (item) return narrative(`[心愿社行动] 我从衣柜取出“${item.名称}”，准备换到${item.部位}槽位。请描写实际换装过程，并在行动完成后据实更新六个衣物槽；不要仅因点击按钮就跳过实际过程。`);
     return;
   }
 

@@ -54,7 +54,7 @@
             <div class="reply-list compact"><p v-for="[messageId, message] in Object.entries(task.私聊)" :key="messageId"><strong>{{ message.发送者 }}</strong><span>{{ message.内容 }}</span><small>{{ message.时间 }}</small></p><p v-if="!Object.keys(task.私聊).length" class="empty-state">暂无私聊记录。</p></div>
             <div v-if="isLatest" class="form-stack">
               <div class="inline-form"><input v-model="privateText" placeholder="给发布者发私聊……" /><button class="button ghost compact" type="button" @click="sendPrivate(id)">发送</button></div>
-              <label>剧情证明摘要<textarea v-model="proofText" placeholder="只填写 AI 根据剧情记录的材料类型与摘要，不上传真实文件。"></textarea></label>
+              <label>证明摘要<textarea v-model="proofText" placeholder="按任务要求填写材料类型、数量、时长与结果摘要；不上传真实文件。"></textarea></label>
               <button class="button primary" type="button" :disabled="task.任务状态 !== '可提交'" @click="submitProof(id)">提交证明摘要</button>
             </div>
           </div>
@@ -81,7 +81,7 @@
     </template>
 
     <form v-else class="publish-form" @submit.prevent="submitPublish">
-      <div class="form-intro"><i class="fa-solid fa-shield-heart"></i><div><strong>结构化发布</strong><span>奖励会按“每人奖励 × 名额”立即进入托管。</span></div></div>
+      <div class="form-intro"><i class="fa-solid fa-shield-heart"></i><div><strong>结构化发布</strong><span>奖励会按“每人奖励 × 名额”立即进入托管；性爱任务请直接写明具体行为与边界。</span></div></div>
       <label class="span-2">任务标题<input v-model="publishForm.标题" maxlength="50" placeholder="一句话说明要做什么" /></label>
       <label class="span-2">任务正文<textarea v-model="publishForm.正文" placeholder="说明内容、边界和完成标准"></textarea></label>
       <label>标签<input v-model="publishForm.标签" placeholder="线上｜写真｜体验" /></label>
@@ -91,7 +91,7 @@
       <label>每人奖励<input v-model.number="publishForm.奖励" type="number" min="1" /></label>
       <label>名额<select v-model.number="publishForm.总名额"><option :value="1">1</option><option :value="2">2</option><option :value="3">3</option><option :value="4">4</option></select></label>
       <label class="span-2">参与条件<input v-model="publishForm.参与条件" placeholder="仅限成年人；自愿参与；可随时退出" /></label>
-      <label class="span-2">证明要求<textarea v-model="publishForm.证明要求" placeholder="只描述需要记录的材料类型与摘要"></textarea></label>
+      <label class="span-2">证明要求<textarea v-model="publishForm.证明要求" placeholder="例如：在证明栏填写参与人数、持续时长、使用方式与完成结果。"></textarea></label>
       <label class="check-label span-2"><input v-model="publishForm.匿名" type="checkbox" />在大厅匿名展示</label>
       <div class="escrow-preview span-2"><span>本次托管</span><strong><i class="fa-solid fa-heart"></i>{{ escrowPreview }}</strong><small>可用余额 {{ data.账号.爱心.可用 }}</small></div>
       <button class="button primary span-2" type="submit" :disabled="!isLatest">确认发布并托管</button>

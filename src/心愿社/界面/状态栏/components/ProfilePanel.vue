@@ -33,7 +33,7 @@
       <p v-else class="empty-state">本楼层还没有新的平台内操作。</p>
     </section>
 
-    <div class="safety-note"><i class="fa-solid fa-user-shield"></i><div><strong>隐私与边界</strong><span>证明只保留剧情生成的类型与摘要；本地全身像不会写入提示词或角色变量。</span></div></div>
+    <div class="safety-note"><i class="fa-solid fa-user-shield"></i><div><strong>隐私与边界</strong><span>证明只保留材料类型与摘要；本地全身像仅在当前设备显示，不会随证明提交或上传平台。</span></div></div>
   </section>
 </template>
 
