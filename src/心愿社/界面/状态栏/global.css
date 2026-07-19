@@ -38,6 +38,30 @@ i { flex: 0 0 auto; }
 .wish-app * { min-width: 0; }
 .wish-app p, .wish-app dd, .wish-app span, .wish-app strong { overflow-wrap: anywhere; }
 
+.boot-shell {
+  min-height: 178px; display: grid; place-items: center; align-content: center; gap: 15px; padding: 27px 22px;
+  background:
+    radial-gradient(circle at 16% 18%, rgba(255,185,141,.2), transparent 34%),
+    linear-gradient(135deg,#fff7f3,#fff 58%,#fff0f1);
+  text-align: center;
+}
+.boot-brand { display: flex; align-items: center; gap: 12px; }
+.boot-brand > div { text-align: left; }
+.boot-brand strong { display: block; font-size: 21px; letter-spacing: 2px; }
+.boot-brand small { display: block; margin-top: 1px; color: var(--c-muted); font-size: 10px; letter-spacing: 1.5px; }
+.boot-mark {
+  display: grid; place-items: center; width: 44px; aspect-ratio: 1; border-radius: 15px;
+  background: linear-gradient(145deg,var(--c-primary),#ff9d9c); color: #fff;
+  box-shadow: 0 7px 18px rgba(243,111,130,.25); font-size: 20px;
+}
+.boot-progress { width: min(280px,76vw); height: 5px; border-radius: 999px; background: rgba(233,189,185,.45); overflow: hidden; }
+.boot-progress span {
+  display: block; width: 42%; height: 100%; border-radius: inherit;
+  background: linear-gradient(90deg,var(--c-primary),var(--c-accent)); animation: boot-slide 1.2s ease-in-out infinite;
+}
+.boot-shell p { max-width: 560px; margin: 0; color: var(--c-muted); font-size: 11px; }
+@keyframes boot-slide { from { transform: translateX(-110%); } to { transform: translateX(340%); } }
+
 .top-summary { display: grid; grid-template-columns: 168px 1fr 210px; gap: 16px; align-items: center; padding: 18px 20px; background: linear-gradient(135deg,#fff7f3,#fff 58%,#fff0f1); border-bottom: 1px solid var(--c-border); }
 .brand-block { display: flex; align-items: center; gap: 10px; }
 .brand-mark { display: grid; place-items: center; width: 42px; aspect-ratio: 1; border-radius: 14px; background: linear-gradient(145deg,var(--c-primary),#ff9d9c); color: #fff; box-shadow: 0 6px 16px rgba(243,111,130,.24); font-size: 19px; }

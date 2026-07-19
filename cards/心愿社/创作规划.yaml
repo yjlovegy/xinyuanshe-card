@@ -7,6 +7,7 @@ project:
     type: Vue MVU 前端
     source_path: tavern_helper_template/src/心愿社/界面/状态栏
     cdn_url: https://testingcf.jsdelivr.net/gh/yjlovegy/xinyuanshe-card/dist/心愿社/界面/状态栏/index.html
+    opening_behavior: 开场白占位符立即显示加载界面；当前楼层 stat_data 完整通过 Schema 校验后再挂载状态栏，避免 MVU 初始化竞态导致首屏空白或 ZodError。
 
 world:
   overview: 2026年现代社会；与现实的差异是面向成年人的任务平台“心愿社”合法公开运营，成人任务被视为正常的自愿服务。
