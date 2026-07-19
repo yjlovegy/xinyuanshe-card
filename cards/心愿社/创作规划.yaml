@@ -26,11 +26,15 @@ characters:
       gender: 女
       identity: 居住在中国上海的独居女性，心愿社用户
       relationship: 由玩家扮演
-    appearance: []
+    appearance:
+      - 身高168厘米
+      - D罩杯，胸部曲线明显
+      - 外貌与日常气质自然清纯无害，外人通常误以为她缺少性经验
     personality:
-      base: 由玩家决定
-      main: []
-      accent: []
+      fixed_canon: true
+      base: 好奇、坦率面对欲望、重视自主选择
+      main: [清纯无害, 温和克制]
+      accent: [性经验丰富, 亲密开放, 刺激寻求, 主导与服从双向切换]
     tri_faceted: false
 
 style:
@@ -43,6 +47,10 @@ entries:
     type: 世界观
     path: 世界书/世界观/心愿社平台规则.yaml
     purpose: 规定平台板块、爱心经济、任务上限、证明审核与成年自愿边界
+  - name: 主角_角色档案
+    type: 角色
+    path: 世界书/角色/主角/角色档案.yaml
+    purpose: 固定主角的成年身份、身材、清纯外表与高度开放的私下反差，并明确高强度亲密玩法的同意边界
 
 mvu:
   structure: |
@@ -118,5 +126,6 @@ first_messages:
     scene: 2026年07月20日早晨，上海的独居公寓
     opening_situation: |
       你在醒来后看到手机里刚安装的“心愿社”，首页同时出现任务、论坛、商城和欢迎通知。
-      叙述保持第二人称，不替玩家决定姓名、性格或是否接受成人任务；让玩家可以自由浏览应用或先处理现实生活。
+      叙述保持第二人称；主角固定外貌与人格按角色档案执行，但不替玩家决定姓名、当下行动或是否接受具体成人任务。
+      让玩家可以自由浏览应用或先处理现实生活。
       结尾必须保留 <StatusPlaceHolderImpl/>，使交互状态栏在开场楼层显示。
