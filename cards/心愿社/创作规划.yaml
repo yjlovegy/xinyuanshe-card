@@ -6,7 +6,7 @@ project:
   statusbar:
     type: Vue MVU 前端
     source_path: tavern_helper_template/src/心愿社/界面/状态栏
-    cdn_url: https://testingcf.jsdelivr.net/gh/yjlovegy/xinyuanshe-card/dist/心愿社/界面/状态栏/index.html
+    cdn_url: https://testingcf.jsdelivr.net/gh/yjlovegy/xinyuanshe-card@a88b408b5b9467efcb29df661cfc2c7be9abf82c/dist/心愿社/界面/状态栏/index.html
     opening_behavior: 开场白占位符立即显示加载界面；当前楼层 stat_data 完整通过 Schema 校验后再挂载状态栏，避免 MVU 初始化竞态导致首屏空白或 ZodError。
 
 world:

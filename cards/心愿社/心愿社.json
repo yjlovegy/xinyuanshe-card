@@ -51,7 +51,7 @@
           "id": "ce6da13c-4e35-4057-8964-3192b7903acc",
           "scriptName": "状态栏界面",
           "findRegex": "<StatusPlaceHolderImpl/>",
-          "replaceString": "```\n<body>\n<script>\n$('body').load('https://testingcf.jsdelivr.net/gh/yjlovegy/xinyuanshe-card/dist/心愿社/界面/状态栏/index.html')\n</script>\n</body>\n```\n",
+          "replaceString": "```\n<body>\n<script>\n$('body').load('https://testingcf.jsdelivr.net/gh/yjlovegy/xinyuanshe-card@a88b408b5b9467efcb29df661cfc2c7be9abf82c/dist/心愿社/界面/状态栏/index.html')\n</script>\n</body>\n```\n",
           "trimStrings": [],
           "placement": [
             2
