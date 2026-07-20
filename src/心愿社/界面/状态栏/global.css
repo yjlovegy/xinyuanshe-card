@@ -32,7 +32,7 @@ textarea { resize: vertical; height: 88px; line-height: 1.55; }
 i { flex: 0 0 auto; }
 
 .wish-app {
-  width: min(100%, 980px); margin: 0 auto; border: 1px solid var(--c-border-strong); border-radius: 26px; background: var(--c-surface);
+  width: 100%; max-width: none; margin: 0 auto; border: 1px solid var(--c-border-strong); border-radius: 26px; background: var(--c-surface);
   box-shadow: 0 16px 42px var(--c-shadow); overflow: hidden; font-size: 14px; line-height: 1.5;
 }
 .wish-app * { min-width: 0; }
@@ -280,6 +280,9 @@ dd { margin: 0; font-size: 11px; }
 .body-card strong { font-size: 11px; }
 .body-card span { border-radius: 999px; padding: 2px 7px; background: var(--c-primary-soft); color: var(--c-primary-deep); font-size: 8px; }
 .body-card p { margin: 4px 0 0; color: var(--c-muted); font-size: 9px; }
+.character-thought { display: grid; grid-template-columns: auto 1fr; gap: 9px; align-items: start; padding: 12px 13px; border-left: 3px solid var(--c-primary); border-radius: 11px; background: linear-gradient(135deg,var(--c-primary-soft),var(--c-accent-soft)); }
+.character-thought > i { margin-top: 2px; color: var(--c-primary); }
+.character-thought p { margin: 0; color: var(--c-text); font-size: 11px; line-height: 1.6; }
 .inventory-section { padding-top: 14px; border-top: 1px solid var(--c-border); }
 .section-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 10px; }
 .section-row h3 { margin: 0; }

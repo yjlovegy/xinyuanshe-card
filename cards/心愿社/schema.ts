@@ -63,6 +63,7 @@ export const Schema = z.object({
 
   主角: z.object({
     姓名: z.string().prefault('玩家'),
+    内心想法: z.string().prefault('我先看看心愿社里有什么。'),
     穿着: z.record(
       z.enum(['上衣', '下装', '袜子', '鞋子', '内衣', '内裤']),
       z.object({
@@ -122,7 +123,7 @@ export const Schema = z.object({
             .transform(data => _.fromPairs(_.takeRight(_.entries(data), 8))),
         }),
       )
-      .transform(data => _.fromPairs(_.takeRight(_.entries(data), 12))),
+      .transform(data => _.fromPairs(_.takeRight(_.entries(data), 5))),
     我接取的: z
       .record(
         z.string().describe('任务ID'),
@@ -210,7 +211,7 @@ export const Schema = z.object({
             .transform(data => _.fromPairs(_.takeRight(_.entries(data), 8))),
         }),
       )
-      .transform(data => _.fromPairs(_.takeRight(_.entries(data), 12))),
+      .transform(data => _.fromPairs(_.takeRight(_.entries(data), 5))),
     动态新品: z
       .record(
         z.string().describe('商品ID'),

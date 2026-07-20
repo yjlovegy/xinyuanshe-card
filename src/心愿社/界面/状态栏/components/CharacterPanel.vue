@@ -48,6 +48,13 @@
             </article>
           </div>
         </section>
+
+        <section class="subsection">
+          <h3><i class="fa-solid fa-comment-dots"></i> 内心想法</h3>
+          <div class="character-thought">
+            <i class="fa-solid fa-quote-left"></i><p>{{ data.主角.内心想法 }}</p>
+          </div>
+        </section>
       </div>
     </div>
 
