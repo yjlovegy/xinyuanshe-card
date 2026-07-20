@@ -1,9 +1,9 @@
 <template>
   <main class="wish-app" :class="{ 'is-readonly': !isLatest }">
-    <TopSummary :is-latest="isLatest" @navigate="activeTab = $event" />
+    <TopSummary :is-latest="isLatest" @navigate="selectTab" />
 
     <nav class="main-nav" aria-label="心愿社板块">
-      <button v-for="item in tabs" :key="item.id" :class="{ active: activeTab === item.id }" type="button" @click="activeTab = item.id">
+      <button v-for="item in tabs" :key="item.id" :class="{ active: activeTab === item.id }" type="button" @click="selectTab(item.id)">
         <i :class="['fa-solid', item.icon]"></i><span>{{ item.label }}</span>
       </button>
     </nav>
@@ -21,11 +21,11 @@
     </section>
 
     <template v-else>
-      <TaskPanel v-if="activeTab === 'tasks'" :is-latest="isLatest" />
-      <ForumPanel v-else-if="activeTab === 'forum'" :is-latest="isLatest" />
+      <TaskPanel v-if="activeTab === 'tasks'" :is-latest="isLatest" :open-task-id="navigationTarget?.板块 === '任务' ? navigationTarget.帖子ID : ''" />
+      <ForumPanel v-else-if="activeTab === 'forum'" :is-latest="isLatest" :open-post-id="navigationTarget?.板块 === '论坛' ? navigationTarget.帖子ID : ''" />
       <ShopPanel v-else-if="activeTab === 'shop'" :is-latest="isLatest" />
       <CharacterPanel v-else-if="activeTab === 'character'" :is-latest="isLatest" />
-      <ProfilePanel v-else :is-latest="isLatest" />
+      <ProfilePanel v-else :is-latest="isLatest" @open-notice="openNotice" />
     </template>
 
     <footer><span>心愿社仅面向成年人 · 自愿、知情、可撤回</span><span>当前楼层 #{{ mountedFloorId }}</span></footer>
@@ -47,6 +47,8 @@ const isLatest = ref(mountedFloorId === getLastMessageId());
 useIntervalFn(() => (isLatest.value = mountedFloorId === getLastMessageId()), 1200);
 const actions = useAppActions(isLatest);
 const activeTab = useLocalStorage('心愿社:active-tab', 'tasks');
+type ThreadTarget = { 板块: '任务' | '论坛'; 帖子ID: string };
+const navigationTarget = ref<ThreadTarget | null>(null);
 const tabs = [
   { id: 'tasks', label: '任务', icon: 'fa-list-check' },
   { id: 'forum', label: '论坛', icon: 'fa-comments' },
@@ -59,6 +61,16 @@ const acceptedCount = computed(() => Object.keys(data.心愿社.我接取的).le
 const publishedCount = computed(() => Object.keys(data.心愿社.我发布的).length);
 const orderCount = computed(() => Object.keys(data.心愿社.订单).length);
 const unreadCount = computed(() => Object.values(data.心愿社.通知).filter(item => !item.已读).length);
+
+function selectTab(tab: string) {
+  navigationTarget.value = null;
+  activeTab.value = tab;
+}
+
+function openNotice(target: ThreadTarget) {
+  navigationTarget.value = { ...target };
+  activeTab.value = target.板块 === '任务' ? 'tasks' : 'forum';
+}
 
 watchEffect(() => {
   if (!isLatest.value) return;

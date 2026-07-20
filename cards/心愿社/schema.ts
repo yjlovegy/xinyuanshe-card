@@ -115,6 +115,8 @@ export const Schema = z.object({
           证明要求: z.string(),
           匿名: z.boolean(),
           状态: z.enum(['可接取', '已满', '已结束', '已取消']),
+          首页可见: z.boolean().prefault(true),
+          我已参与: z.boolean().prefault(false),
           回复: z
             .record(
               z.string().describe('回复ID'),
@@ -123,7 +125,13 @@ export const Schema = z.object({
             .transform(data => _.fromPairs(_.takeRight(_.entries(data), 8))),
         }),
       )
-      .transform(data => _.fromPairs(_.takeRight(_.entries(data), 5))),
+      .transform(data => {
+        const entries = _.entries(data);
+        return _.fromPairs([
+          ..._.takeRight(entries.filter(([, item]) => !item.我已参与), 20),
+          ...entries.filter(([, item]) => item.我已参与),
+        ]);
+      }),
     我接取的: z
       .record(
         z.string().describe('任务ID'),
@@ -203,6 +211,8 @@ export const Schema = z.object({
           已点赞: z.boolean(),
           已收藏: z.boolean(),
           是否我的: z.boolean(),
+          首页可见: z.boolean().prefault(true),
+          我已参与: z.boolean().prefault(false),
           回复: z
             .record(
               z.string().describe('回复ID'),
@@ -211,7 +221,13 @@ export const Schema = z.object({
             .transform(data => _.fromPairs(_.takeRight(_.entries(data), 8))),
         }),
       )
-      .transform(data => _.fromPairs(_.takeRight(_.entries(data), 5))),
+      .transform(data => {
+        const entries = _.entries(data);
+        return _.fromPairs([
+          ..._.takeRight(entries.filter(([, item]) => !item.我已参与 && !item.是否我的 && !item.已收藏), 20),
+          ...entries.filter(([, item]) => item.我已参与 || item.是否我的 || item.已收藏),
+        ]);
+      }),
     动态新品: z
       .record(
         z.string().describe('商品ID'),
@@ -256,7 +272,16 @@ export const Schema = z.object({
     通知: z
       .record(
         z.string().describe('通知ID'),
-        z.object({ 类型: z.enum(['任务', '论坛', '商城', '系统']), 标题: z.string(), 内容: z.string(), 时间: z.string(), 已读: z.boolean() }),
+        z.object({
+          类型: z.enum(['任务', '论坛', '商城', '系统']),
+          标题: z.string(),
+          内容: z.string(),
+          时间: z.string(),
+          已读: z.boolean(),
+          跳转目标: z
+            .object({ 板块: z.enum(['任务', '论坛', '无']).prefault('无'), 帖子ID: z.string().prefault('无') })
+            .prefault({}),
+        }),
       )
       .transform(data => _.fromPairs(_.takeRight(_.entries(data), 20))),
     _待处理操作日志: z

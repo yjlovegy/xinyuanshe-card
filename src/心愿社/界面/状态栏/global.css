@@ -308,9 +308,13 @@ dd { margin: 0; font-size: 11px; }
 .profile-stats strong, .snapshot-grid strong { margin-top: 2px; font-size: 15px; }
 .snapshot-grid i { color: var(--c-primary); margin-bottom: 5px; }
 .notice-list { display: grid; gap: 7px; }
-.notice-list article { display: grid; grid-template-columns: 34px 1fr; gap: 9px; padding: 10px; border-radius: 11px; background: var(--c-surface-alt); border-left: 3px solid transparent; }
+.notice-list article { display: grid; grid-template-columns: 34px 1fr auto; gap: 9px; padding: 10px; border-radius: 11px; background: var(--c-surface-alt); border-left: 3px solid transparent; }
 .notice-list article.unread { border-left-color: var(--c-primary); background: var(--c-primary-soft); }
+.notice-list article.linked { cursor: pointer; transition: transform 150ms ease, box-shadow 150ms ease; }
+.notice-list article.linked:hover { transform: translateY(-1px); box-shadow: var(--shadow-soft); }
+.notice-list article.linked:focus-visible { outline: 2px solid var(--c-primary); outline-offset: 2px; }
 .notice-list article > i { display: grid; place-items: center; color: var(--c-primary); }
+.notice-list article > .notice-link-icon { color: var(--c-muted); font-size: 10px; }
 .notice-list article > div > div { display: flex; justify-content: space-between; gap: 8px; }
 .notice-list strong { font-size: 11px; }
 .notice-list small { color: var(--c-muted); font-size: 8px; }

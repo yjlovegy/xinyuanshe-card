@@ -42,7 +42,7 @@ import type { ForumPostForm } from '../composables/useAppActions';
 import { useAppActions } from '../composables/useAppActions';
 import { useDataStore } from '../store';
 
-const props = defineProps<{ isLatest: boolean }>();
+const props = defineProps<{ isLatest: boolean; openPostId?: string }>();
 const actions = useAppActions(toRef(props, 'isLatest'));
 const { data } = useDataStore();
 const filters = ['推荐', '最新', '同城', '收藏'] as const;
@@ -51,7 +51,29 @@ const expanded = ref('');
 const replyText = ref('');
 const showComposer = ref(false);
 const postForm = reactive<ForumPostForm>({ 标题: '', 正文: '', 分区: '最新', 标签: '' });
-const visiblePosts = computed(() => Object.entries(data.心愿社.论坛帖子).filter(([, post]) => filter.value === '收藏' ? post.已收藏 : filter.value === '推荐' ? true : post.分区 === filter.value));
+const allPostEntries = computed(() => Object.entries(data.心愿社.论坛帖子));
+const feedEntries = computed(() => {
+  const entries = allPostEntries.value.filter(([, post]) => post.首页可见);
+  if (!props.openPostId || entries.some(([id]) => id === props.openPostId)) return entries;
+  const post = data.心愿社.论坛帖子[props.openPostId];
+  if (post) entries.unshift([props.openPostId, post]);
+  return entries;
+});
+const visiblePosts = computed(() => {
+  const entries = filter.value === '收藏' ? allPostEntries.value : feedEntries.value;
+  return entries.filter(([, post]) => filter.value === '收藏' ? post.已收藏 : filter.value === '推荐' ? true : post.分区 === filter.value);
+});
+
+watch(
+  () => props.openPostId,
+  id => {
+    if (!id) return;
+    if (!data.心愿社.论坛帖子[id]) return void toastr.warning('这条论坛记录已无法打开。');
+    filter.value = '推荐';
+    expanded.value = id;
+  },
+  { immediate: true },
+);
 
 function sendReply(id: string) { if (actions.replyForum(id, replyText.value)) replyText.value = ''; }
 function submitPost() {

@@ -18,6 +18,7 @@ export type PublishTaskForm = {
 };
 
 export type ForumPostForm = { 标题: string; 正文: string; 分区: '推荐' | '最新' | '同城'; 标签: string };
+export type NoticeTarget = { 板块: '任务' | '论坛' | '无'; 帖子ID: string };
 
 const makeId = (prefix: string) => `${prefix}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 6)}`;
 
@@ -39,9 +40,14 @@ export function useAppActions(isLatest: Ref<boolean>) {
     return resolveUserName(state.主角.姓名);
   }
 
-  function notify(type: '任务' | '论坛' | '商城' | '系统', title: string, content: string) {
+  function notify(
+    type: '任务' | '论坛' | '商城' | '系统',
+    title: string,
+    content: string,
+    target: NoticeTarget = { 板块: '无', 帖子ID: '无' },
+  ) {
     const id = makeId('notice');
-    state.心愿社.通知[id] = { 类型: type, 标题: title, 内容: content, 时间: now(), 已读: false };
+    state.心愿社.通知[id] = { 类型: type, 标题: title, 内容: content, 时间: now(), 已读: false, 跳转目标: target };
   }
 
   function log(operation: string) {
@@ -78,10 +84,11 @@ export function useAppActions(isLatest: Ref<boolean>) {
       私聊: {},
     };
     task.已接人数 += 1;
+    task.我已参与 = true;
     if (task.已接人数 >= task.总名额) task.状态 = '已满';
     if (state.心愿社.当前追踪任务ID === '无') state.心愿社.当前追踪任务ID = taskId;
     log(`接取任务“${task.标题}”，奖励 ${task.奖励} 爱心。`);
-    notify('任务', '接取成功', `“${task.标题}”已加入我的任务。`);
+    notify('任务', '接取成功', `“${task.标题}”已加入我的任务。`, { 板块: '任务', 帖子ID: taskId });
     toastr.success('任务已接取。');
     return;
   }
@@ -107,10 +114,11 @@ export function useAppActions(isLatest: Ref<boolean>) {
     state.账号.爱心.托管 += escrow;
     state.心愿社.我发布的[id] = { ...task, 状态: '招募中', 托管爱心: escrow, 接取者: {} };
     state.心愿社.任务大厅[id] = {
-      发布者: userName(), 发布者等级: state.账号._论坛等级, ...task, 已接人数: 0, 状态: '可接取', 回复: {},
+      发布者: userName(), 发布者等级: state.账号._论坛等级, ...task, 已接人数: 0, 状态: '可接取', 首页可见: true,
+      我已参与: true, 回复: {},
     };
     log(`发布任务“${task.标题}”，${escrow} 爱心进入托管。`);
-    notify('任务', '任务已发布', `已托管 ${escrow} 爱心，等待接取。`);
+    notify('任务', '任务已发布', `已托管 ${escrow} 爱心，等待接取。`, { 板块: '任务', 帖子ID: id });
     toastr.success('任务已发布，奖励已进入托管。');
     return true;
   }
@@ -134,6 +142,7 @@ export function useAppActions(isLatest: Ref<boolean>) {
     const task = state.心愿社.任务大厅[taskId];
     if (!task) return false;
     task.回复[makeId('reply')] = { 作者: userName(), 内容: content.trim(), 时间: now() };
+    task.我已参与 = true;
     log(`在任务“${task.标题}”下公开回复：${content.trim()}`);
     return true;
   }
@@ -155,7 +164,7 @@ export function useAppActions(isLatest: Ref<boolean>) {
     task.审核状态 = '审核中';
     task.任务状态 = '审核中';
     log(`为任务“${task.标题}”提交证明摘要：${summary.trim()}`);
-    notify('任务', '证明已提交', '平台只保存填写的材料类型与摘要，不保存真实文件。');
+    notify('任务', '证明已提交', '平台只保存填写的材料类型与摘要，不保存真实文件。', { 板块: '任务', 帖子ID: taskId });
     toastr.success('证明摘要已提交。');
     return;
   }
@@ -228,7 +237,8 @@ export function useAppActions(isLatest: Ref<boolean>) {
     const id = makeId('post');
     state.心愿社.论坛帖子[id] = {
       作者: userName(), 作者等级: state.账号._论坛等级, 标题: form.标题.trim(), 正文: form.正文.trim(),
-      分区: form.分区, 标签: form.标签.trim() || '随聊', 发布时间: now(), 点赞数: 0, 已点赞: false, 已收藏: false, 是否我的: true, 回复: {},
+      分区: form.分区, 标签: form.标签.trim() || '随聊', 发布时间: now(), 点赞数: 0, 已点赞: false, 已收藏: false,
+      是否我的: true, 首页可见: true, 我已参与: true, 回复: {},
     };
     gainForumExp(10);
     log(`发布论坛帖子“${form.标题.trim()}”，获得 10 点论坛经验。`);
@@ -240,6 +250,7 @@ export function useAppActions(isLatest: Ref<boolean>) {
     const post = state.心愿社.论坛帖子[postId];
     if (!post) return false;
     post.回复[makeId('forum_reply')] = { 作者: userName(), 内容: content.trim(), 时间: now() };
+    post.我已参与 = true;
     gainForumExp(2);
     log(`回复论坛帖子“${post.标题}”：${content.trim()}`);
     return true;
@@ -293,9 +304,15 @@ export function useAppActions(isLatest: Ref<boolean>) {
     Object.values(state.心愿社.通知).forEach((notice: any) => (notice.已读 = true));
   }
 
+  function markNoticeRead(noticeId: string) {
+    if (!requireLatest()) return;
+    const notice = state.心愿社.通知[noticeId];
+    if (notice) notice.已读 = true;
+  }
+
   return {
     acceptTask, publishTask, cancelPublished, replyTask, sendPrivate, submitProof, reviewCandidate, executeTask,
     toggleForumLike, toggleForumFavorite, publishForumPost, replyForum,
-    checkout, receiveOrder, equipItem, markAllRead, narrative, log, notify,
+    checkout, receiveOrder, equipItem, markAllRead, markNoticeRead, narrative, log, notify,
   };
 }

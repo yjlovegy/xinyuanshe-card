@@ -27,7 +27,7 @@
       <div class="character-info">
         <div class="name-card">
           <span>当前角色</span><strong>{{ userName }}</strong>
-          <small>{{ data.世界.当前位置.城市 }}独居 · 21岁</small>
+          <small>21岁 · 168cm · D罩杯 · {{ data.世界.当前位置.城市 }}·{{ data.世界.当前位置.场所 }}</small>
         </div>
 
         <section class="subsection">

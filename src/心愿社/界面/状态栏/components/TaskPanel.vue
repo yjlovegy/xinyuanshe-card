@@ -127,7 +127,7 @@ import type { PublishTaskForm } from '../composables/useAppActions';
 import { useAppActions } from '../composables/useAppActions';
 import { useDataStore } from '../store';
 
-const props = defineProps<{ isLatest: boolean }>();
+const props = defineProps<{ isLatest: boolean; openTaskId?: string }>();
 const isLatestRef = toRef(props, 'isLatest');
 const { data } = useDataStore();
 const actions = useAppActions(isLatestRef);
@@ -139,7 +139,15 @@ const openAccepted = ref('');
 const taskReply = ref('');
 const privateText = ref('');
 const proofText = ref('');
-const hallEntries = computed(() => Object.entries(data.心愿社.任务大厅));
+const allTaskEntries = computed(() => Object.entries(data.心愿社.任务大厅));
+const hallEntries = computed(() => allTaskEntries.value.filter(([, task]) => task.首页可见));
+const displayedTaskEntries = computed(() => {
+  const entries = [...hallEntries.value];
+  if (!props.openTaskId || entries.some(([id]) => id === props.openTaskId)) return entries;
+  const task = data.心愿社.任务大厅[props.openTaskId];
+  if (task) entries.unshift([props.openTaskId, task]);
+  return entries;
+});
 const acceptedEntries = computed(() => Object.entries(data.心愿社.我接取的));
 const publishedEntries = computed(() => Object.entries(data.心愿社.我发布的));
 const interactionEntries = (task: (typeof acceptedEntries.value)[number][1]) => Object.entries(task.互动人物 ?? {});
@@ -147,11 +155,24 @@ const views = computed(() => [
   { id: 'hall', label: '任务大厅', count: hallEntries.value.length }, { id: 'accepted', label: '我接取的', count: acceptedEntries.value.length },
   { id: 'published', label: '我发布的', count: publishedEntries.value.length }, { id: 'publish', label: '发布任务' },
 ]);
-const filteredTasks = computed(() => hallEntries.value.filter(([, task]) => {
+const filteredTasks = computed(() => displayedTaskEntries.value.filter(([, task]) => {
   const query = keyword.value.trim().toLowerCase();
   const matchesText = !query || `${task.标题}${task.正文}${task.标签}${task.地点}`.toLowerCase().includes(query);
   return matchesText && (modeFilter.value === '全部' || task.方式 === modeFilter.value);
 }));
+
+watch(
+  () => props.openTaskId,
+  id => {
+    if (!id) return;
+    if (!data.心愿社.任务大厅[id]) return void toastr.warning('这条任务记录已无法打开。');
+    view.value = 'hall';
+    keyword.value = '';
+    modeFilter.value = '全部';
+    selectedTaskId.value = id;
+  },
+  { immediate: true },
+);
 
 const publishForm = reactive<PublishTaskForm>({ 标题: '', 正文: '', 标签: '', 方式: '线上', 地点: '不限', 截止时间: '2026年07月25日 20:00', 奖励: 100, 总名额: 1, 参与条件: '仅限成年人；自愿参与；可随时退出。', 证明要求: '', 匿名: false });
 const escrowPreview = computed(() => Math.max(0, Number(publishForm.奖励) || 0) * Math.max(1, Number(publishForm.总名额) || 1));

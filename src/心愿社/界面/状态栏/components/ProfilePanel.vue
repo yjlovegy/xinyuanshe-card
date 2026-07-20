@@ -10,7 +10,7 @@
         <img v-if="avatarSource" :src="avatarSource" alt="人物头像" />
         <span v-else>{{ userName.slice(0, 1) }}</span>
       </div>
-      <div><strong>{{ userName }}</strong><p>上海 · 成年用户 · 论坛 Lv.{{ data.账号._论坛等级 }}</p></div>
+      <div><strong>{{ userName }}</strong><p>IP地址：{{ data.世界.当前位置.城市 }} · 论坛等级：Lv.{{ data.账号._论坛等级 }}</p></div>
       <div class="wallet"><span>可用 <b>{{ data.账号.爱心.可用 }}</b></span><span>托管 <b>{{ data.账号.爱心.托管 }}</b></span></div>
     </div>
 
@@ -24,8 +24,13 @@
     <section class="subsection">
       <div class="section-row"><h3><i class="fa-regular fa-bell"></i> 通知</h3><span>{{ unread }} 条未读</span></div>
       <div class="notice-list">
-        <article v-for="[id, notice] in notices" :key="id" :class="{ unread: !notice.已读 }">
+        <article
+          v-for="[id, notice] in notices" :key="id" :class="{ unread: !notice.已读, linked: canOpenNotice(notice) }"
+          :role="canOpenNotice(notice) ? 'button' : undefined" :tabindex="canOpenNotice(notice) ? 0 : undefined"
+          @click="openNotice(id, notice)" @keyup.enter="openNotice(id, notice)"
+        >
           <i :class="['fa-solid', noticeIcon(notice.类型)]"></i><div><div><strong>{{ notice.标题 }}</strong><small>{{ notice.时间 }}</small></div><p>{{ notice.内容 }}</p></div>
+          <i v-if="canOpenNotice(notice)" class="fa-solid fa-chevron-right notice-link-icon"></i>
         </article>
       </div>
     </section>
@@ -46,7 +51,10 @@ import { resolveUserName } from '../composables/useUserName';
 import { useDataStore } from '../store';
 
 const props = defineProps<{ isLatest: boolean }>();
+type ThreadTarget = { 板块: '任务' | '论坛'; 帖子ID: string };
+const emit = defineEmits<{ openNotice: [target: ThreadTarget] }>();
 const { data } = useDataStore();
+type Notice = (typeof data.心愿社.通知)[string];
 const actions = useAppActions(toRef(props, 'isLatest'));
 const userName = computed(() => resolveUserName(data.主角.姓名));
 const { avatarSource } = useAvatarStorage();
@@ -54,4 +62,10 @@ const notices = computed(() => Object.entries(data.心愿社.通知).reverse());
 const logs = computed(() => Object.entries(data.心愿社._待处理操作日志).reverse());
 const unread = computed(() => Object.values(data.心愿社.通知).filter(item => !item.已读).length);
 const noticeIcon = (type: string) => ({ 任务: 'fa-list-check', 论坛: 'fa-comments', 商城: 'fa-bag-shopping', 系统: 'fa-gear' })[type] ?? 'fa-bell';
+const canOpenNotice = (notice: Notice) => ['任务', '论坛'].includes(notice.跳转目标.板块) && notice.跳转目标.帖子ID !== '无';
+function openNotice(id: string, notice: Notice) {
+  if (!canOpenNotice(notice)) return;
+  actions.markNoticeRead(id);
+  emit('openNotice', notice.跳转目标 as ThreadTarget);
+}
 </script>
