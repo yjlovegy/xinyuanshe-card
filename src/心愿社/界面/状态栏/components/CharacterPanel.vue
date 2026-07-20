@@ -82,8 +82,8 @@
 </template>
 
 <script setup lang="ts">
-import { useIDBKeyval } from '@vueuse/integrations/useIDBKeyval';
 import { useAppActions } from '../composables/useAppActions';
+import { useAvatarStorage } from '../composables/useAvatarStorage';
 import { resolveUserName } from '../composables/useUserName';
 import { useDataStore } from '../store';
 
@@ -96,22 +96,7 @@ const clothingSlots = ['上衣', '下装', '袜子', '鞋子', '内衣', '内裤
 const bodyParts = ['樱唇', '双乳', '小穴', '玉足', '肛门', '子宫'] as const;
 const wardrobe = computed(() => Object.entries(data.心愿社.衣柜));
 const inventory = computed(() => Object.entries(data.心愿社.道具库存));
-
-const sessionAvatarSource = ref('');
-const avatarStorageUnavailable = ref(false);
-const { data: storedAvatarSource } = useIDBKeyval<string>('心愿社:full-body-avatar', '', {
-  onError(error) {
-    avatarStorageUnavailable.value = true;
-    console.warn('[心愿社] 无法访问 IndexedDB，全身像将在本次会话中临时保存。', error);
-  },
-});
-const avatarSource = computed({
-  get: () => (avatarStorageUnavailable.value ? sessionAvatarSource.value : storedAvatarSource.value),
-  set: value => {
-    sessionAvatarSource.value = value;
-    if (!avatarStorageUnavailable.value) storedAvatarSource.value = value;
-  },
-});
+const { avatarSource } = useAvatarStorage();
 const { open, onChange } = useFileDialog({ accept: 'image/*', multiple: false });
 const showUrl = ref(false);
 const urlInput = ref('');

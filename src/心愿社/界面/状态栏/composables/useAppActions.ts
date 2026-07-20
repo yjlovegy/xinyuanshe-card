@@ -27,7 +27,7 @@ export function useAppActions(isLatest: Ref<boolean>) {
 
   function requireLatest() {
     if (isLatest.value) return true;
-    toastr.info('这是历史楼层，只能查看当时状态。');
+    toastr.info('这一楼层仅供查看，不能修改当前状态。');
     return false;
   }
 

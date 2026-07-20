@@ -2,11 +2,6 @@
   <main class="wish-app" :class="{ 'is-readonly': !isLatest }">
     <TopSummary :is-latest="isLatest" @navigate="activeTab = $event" />
 
-    <div v-if="!isLatest" class="history-banner">
-      <i class="fa-solid fa-clock-rotate-left"></i>
-      <div><strong>历史楼层 · 只读快照</strong><span>以下内容保留当时状态，不能修改当前楼层。</span></div>
-    </div>
-
     <nav class="main-nav" aria-label="心愿社板块">
       <button v-for="item in tabs" :key="item.id" :class="{ active: activeTab === item.id }" type="button" @click="activeTab = item.id">
         <i :class="['fa-solid', item.icon]"></i><span>{{ item.label }}</span>
@@ -14,7 +9,7 @@
     </nav>
 
     <section v-if="!isLatest" class="history-summary panel">
-      <div class="panel-heading"><div><span class="eyebrow">SNAPSHOT</span><h2>当时状态</h2></div></div>
+      <div class="panel-heading"><div><span class="eyebrow">SNAPSHOT</span><h2>当前状态</h2></div></div>
       <div class="snapshot-grid">
         <article><i class="fa-solid fa-list-check"></i><span>已接任务</span><strong>{{ acceptedCount }} / 2</strong></article>
         <article><i class="fa-solid fa-bullhorn"></i><span>已发任务</span><strong>{{ publishedCount }} / 1</strong></article>
@@ -22,7 +17,7 @@
         <article><i class="fa-regular fa-bell"></i><span>未读通知</span><strong>{{ unreadCount }}</strong></article>
       </div>
       <CharacterPanel v-if="activeTab === 'character'" :is-latest="false" />
-      <div v-else class="snapshot-note">切换到“人物”可查看当时的穿着、身体状态、衣柜和库存。</div>
+      <div v-else class="snapshot-note">切换到“人物”可查看这一楼层记录的穿着、身体状态、衣柜和库存。</div>
     </section>
 
     <template v-else>
