@@ -74,6 +74,7 @@ export function useAppActions(isLatest: Ref<boolean>) {
       证明摘要: '',
       审核状态: '未提交',
       奖励已结算: false,
+      互动人物: {},
       私聊: {},
     };
     task.已接人数 += 1;
@@ -188,9 +189,14 @@ export function useAppActions(isLatest: Ref<boolean>) {
     await triggerSlash('/trigger');
   }
 
-  function executeTask(taskId: string) {
+  async function executeTask(taskId: string) {
+    if (!requireLatest()) return;
     const task = state.心愿社.我接取的[taskId];
-    if (task) return narrative(`[心愿社行动] 我准备执行任务“${task.标题}”（任务ID：${taskId}）。请结合当前时间、地点、穿着、任务要求和已发生的事件继续叙事，并据实更新任务进度与人物状态。`);
+    if (task) {
+      const title = task.标题.replace(/[\r\n|]+/g, ' ').trim();
+      await triggerSlash(`/setinput 开始执行“${title}”任务`);
+      toastr.info('已填入消息框，请确认或修改后手动发送。');
+    }
     return;
   }
 
@@ -278,7 +284,7 @@ export function useAppActions(isLatest: Ref<boolean>) {
 
   function equipItem(itemId: string) {
     const item = state.心愿社.衣柜[itemId];
-    if (item) return narrative(`[心愿社行动] 我从衣柜取出“${item.名称}”，准备换到${item.部位}槽位。请描写实际换装过程，并在行动完成后据实更新六个衣物槽；不要仅因点击按钮就跳过实际过程。`);
+    if (item) return narrative(`[心愿社行动] 我从衣柜取出“${item.名称}”，准备换到${item.部位}。请描写实际换装过程，并在行动完成后据实更新穿着；不要仅因点击按钮就跳过实际过程。`);
     return;
   }
 

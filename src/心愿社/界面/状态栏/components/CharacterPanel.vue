@@ -31,7 +31,7 @@
         </div>
 
         <section class="subsection">
-          <h3><i class="fa-solid fa-shirt"></i> 六个衣物槽</h3>
+          <h3><i class="fa-solid fa-shirt"></i> 穿着</h3>
           <div class="slot-grid">
             <article v-for="slot in clothingSlots" :key="slot" class="slot-card">
               <span>{{ slot }}</span><strong>{{ data.主角.穿着[slot].名称 }}</strong><small>{{ data.主角.穿着[slot].状态 }}</small>
@@ -40,7 +40,7 @@
         </section>
 
         <section class="subsection">
-          <h3><i class="fa-solid fa-sparkles"></i> 身体状态</h3>
+          <h3><i class="fa-solid fa-heart"></i> 身体状态</h3>
           <div class="body-grid">
             <article v-for="part in bodyParts" :key="part" class="body-card">
               <div><strong>{{ part }}</strong><span>{{ data.主角.私密状态[part].标签 }}</span></div>
@@ -86,7 +86,7 @@ const { data } = useDataStore();
 const actions = useAppActions(isLatestRef);
 const userName = computed(() => resolveUserName(data.主角.姓名));
 const clothingSlots = ['上衣', '下装', '袜子', '鞋子', '内衣', '内裤'] as const;
-const bodyParts = ['樱唇', '双乳', '小穴', '玉足'] as const;
+const bodyParts = ['樱唇', '双乳', '小穴', '玉足', '肛门', '子宫'] as const;
 const wardrobe = computed(() => Object.entries(data.心愿社.衣柜));
 const inventory = computed(() => Object.entries(data.心愿社.道具库存));
 

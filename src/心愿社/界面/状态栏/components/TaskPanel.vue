@@ -46,6 +46,29 @@
         <article v-for="[id, task] in acceptedEntries" :key="id" class="manage-card">
           <div class="manage-head"><div><span class="status-pill open">{{ task.任务状态 }}</span><h3>{{ task.标题 }}</h3><p>发布者：{{ task.发布者 }} · {{ task.方式 }} / {{ task.地点 }}</p></div><strong class="reward"><i class="fa-solid fa-heart"></i>{{ task.奖励 }}</strong></div>
           <dl class="compact-dl"><div><dt>截止</dt><dd>{{ task.截止时间 }}</dd></div><div><dt>证明</dt><dd>{{ task.证明要求 }}</dd></div><div><dt>审核</dt><dd>{{ task.审核状态 }}</dd></div></dl>
+          <section class="interaction-section">
+            <div class="interaction-heading"><div><i class="fa-solid fa-users"></i><strong>当前互动人物</strong></div><span>{{ interactionEntries(task).length }} 人</span></div>
+            <div v-if="interactionEntries(task).length" class="interaction-list">
+              <article v-for="[personId, person] in interactionEntries(task)" :key="personId" class="interaction-card">
+                <div class="interaction-person">
+                  <i :class="['fa-solid', person.性别 === '男' ? 'fa-mars' : 'fa-venus']"></i>
+                  <div><strong>{{ person.姓名 }}</strong><span>{{ person.性别 === '男' ? '男性' : '女性' }} · {{ person.年龄 }}岁 · {{ person.身高 }}<template v-if="person.性别 === '女'"> · {{ person.罩杯 }}</template></span></div>
+                </div>
+                <div class="interaction-block">
+                  <h5><i class="fa-solid fa-shirt"></i> 穿着</h5>
+                  <div class="interaction-wear"><span v-for="[part, clothing] in Object.entries(person.穿着)" :key="part"><b>{{ part }}</b>{{ clothing }}</span></div>
+                </div>
+                <div class="interaction-block">
+                  <h5><i class="fa-solid fa-heart"></i> 身体状态</h5>
+                  <div class="interaction-body">
+                    <div v-for="[part, status] in Object.entries(person.身体状态)" :key="part"><div><b>{{ part }}</b><em>{{ status.标签 }}</em></div><p>{{ status.描述 }}</p></div>
+                  </div>
+                </div>
+                <div class="interaction-thought"><h5><i class="fa-solid fa-comment-dots"></i> 内心想法</h5><p>{{ person.内心想法 }}</p></div>
+              </article>
+            </div>
+            <p v-else class="empty-state interaction-empty">开始任务并与其他人物产生互动后，此处显示当前信息。</p>
+          </section>
           <div v-if="isLatest" class="action-row">
             <button class="button primary" type="button" @click="actions.executeTask(id)"><i class="fa-solid fa-play"></i> 执行任务</button>
             <button class="button ghost" type="button" @click="openAccepted = openAccepted === id ? '' : id"><i class="fa-regular fa-message"></i> 私聊与证明</button>
@@ -81,7 +104,7 @@
     </template>
 
     <form v-else class="publish-form" @submit.prevent="submitPublish">
-      <div class="form-intro"><i class="fa-solid fa-shield-heart"></i><div><strong>结构化发布</strong><span>奖励会按“每人奖励 × 名额”立即进入托管；性爱任务请直接写明具体行为与边界。</span></div></div>
+      <div class="form-intro"><i class="fa-solid fa-shield-heart"></i><div><strong>说明</strong><span>奖励会按“每人奖励 × 名额”立即进入托管；性爱任务请直接写明具体行为与边界。</span></div></div>
       <label class="span-2">任务标题<input v-model="publishForm.标题" maxlength="50" placeholder="一句话说明要做什么" /></label>
       <label class="span-2">任务正文<textarea v-model="publishForm.正文" placeholder="说明内容、边界和完成标准"></textarea></label>
       <label>标签<input v-model="publishForm.标签" placeholder="线上｜写真｜体验" /></label>
@@ -119,6 +142,7 @@ const proofText = ref('');
 const hallEntries = computed(() => Object.entries(data.心愿社.任务大厅));
 const acceptedEntries = computed(() => Object.entries(data.心愿社.我接取的));
 const publishedEntries = computed(() => Object.entries(data.心愿社.我发布的));
+const interactionEntries = (task: (typeof acceptedEntries.value)[number][1]) => Object.entries(task.互动人物 ?? {});
 const views = computed(() => [
   { id: 'hall', label: '任务大厅', count: hallEntries.value.length }, { id: 'accepted', label: '我接取的', count: acceptedEntries.value.length },
   { id: 'published', label: '我发布的', count: publishedEntries.value.length }, { id: 'publish', label: '发布任务' },

@@ -1,3 +1,54 @@
+const 身体状态Schema = z.object({
+  标签: z.string().prefault('正常'),
+  描述: z.string().prefault('没有需要特别记录的变化。'),
+});
+
+const 男性互动人物Schema = z.object({
+  性别: z.literal('男'),
+  姓名: z.string(),
+  年龄: z.coerce.number().transform(value => Math.round(_.clamp(value, 18, 120))),
+  身高: z.string(),
+  穿着: z
+    .object({
+      上衣: z.string().prefault('未穿'),
+      下装: z.string().prefault('未穿'),
+      鞋子: z.string().prefault('未穿'),
+      内裤: z.string().prefault('未穿'),
+    })
+    .prefault({}),
+  身体状态: z.object({ 肉棒: 身体状态Schema.prefault({}) }).prefault({}),
+  内心想法: z.string(),
+});
+
+const 女性互动人物Schema = z.object({
+  性别: z.literal('女'),
+  姓名: z.string(),
+  年龄: z.coerce.number().transform(value => Math.round(_.clamp(value, 18, 120))),
+  身高: z.string(),
+  罩杯: z.string(),
+  穿着: z
+    .object({
+      上衣: z.string().prefault('未穿'),
+      下装: z.string().prefault('未穿'),
+      袜子: z.string().prefault('未穿'),
+      鞋子: z.string().prefault('未穿'),
+      内衣: z.string().prefault('未穿'),
+      内裤: z.string().prefault('未穿'),
+    })
+    .prefault({}),
+  身体状态: z
+    .object({
+      樱唇: 身体状态Schema.prefault({}),
+      双乳: 身体状态Schema.prefault({}),
+      小穴: 身体状态Schema.prefault({}),
+      玉足: 身体状态Schema.prefault({}),
+      肛门: 身体状态Schema.prefault({}),
+      子宫: 身体状态Schema.prefault({}),
+    })
+    .prefault({}),
+  内心想法: z.string(),
+});
+
 export const Schema = z.object({
   世界: z.object({
     当前时间: z.string().prefault('2026年07月20日 09:00'),
@@ -20,13 +71,16 @@ export const Schema = z.object({
         状态: z.string().prefault('正常'),
       }),
     ),
-    私密状态: z.record(
-      z.enum(['樱唇', '双乳', '小穴', '玉足']),
-      z.object({
-        标签: z.string().prefault('正常'),
-        描述: z.string().prefault('没有需要特别记录的变化。'),
-      }),
-    ),
+    私密状态: z
+      .object({
+        樱唇: 身体状态Schema.prefault({}),
+        双乳: 身体状态Schema.prefault({}),
+        小穴: 身体状态Schema.prefault({}),
+        玉足: 身体状态Schema.prefault({}),
+        肛门: 身体状态Schema.prefault({}),
+        子宫: 身体状态Schema.prefault({}),
+      })
+      .prefault({}),
   }),
 
   账号: z.object({
@@ -87,6 +141,12 @@ export const Schema = z.object({
           证明摘要: z.string(),
           审核状态: z.enum(['未提交', '审核中', '已通过', '已驳回']),
           奖励已结算: z.boolean(),
+          互动人物: z
+            .record(
+              z.string().describe('人物ID'),
+              z.discriminatedUnion('性别', [男性互动人物Schema, 女性互动人物Schema]),
+            )
+            .prefault({}),
           私聊: z
             .record(
               z.string().describe('消息ID'),
