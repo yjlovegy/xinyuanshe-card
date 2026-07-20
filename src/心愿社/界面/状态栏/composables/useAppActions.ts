@@ -1,6 +1,7 @@
 import type { Ref } from 'vue';
 import type { CatalogProduct } from '../products';
 import { useDataStore } from '../store';
+import { resolveUserName } from './useUserName';
 
 export type PublishTaskForm = {
   标题: string;
@@ -34,6 +35,10 @@ export function useAppActions(isLatest: Ref<boolean>) {
     return state.世界.当前时间;
   }
 
+  function userName() {
+    return resolveUserName(state.主角.姓名);
+  }
+
   function notify(type: '任务' | '论坛' | '商城' | '系统', title: string, content: string) {
     const id = makeId('notice');
     state.心愿社.通知[id] = { 类型: type, 标题: title, 内容: content, 时间: now(), 已读: false };
@@ -48,7 +53,7 @@ export function useAppActions(isLatest: Ref<boolean>) {
     if (!requireLatest()) return;
     const task = state.心愿社.任务大厅[taskId];
     if (!task || task.状态 !== '可接取') return toastr.warning('该任务目前不可接取。');
-    if (task.发布者 === state.主角.姓名) return toastr.warning('不能接取自己发布的任务。');
+    if (state.心愿社.我发布的[taskId] || task.发布者 === userName()) return toastr.warning('不能接取自己发布的任务。');
     if (state.心愿社.我接取的[taskId]) return toastr.info('你已经接取过这个任务。');
     const activeAccepted = Object.values(state.心愿社.我接取的).filter((item: any) => !['已完成', '失败', '已放弃'].includes(item.任务状态));
     if (activeAccepted.length >= 2) return toastr.warning('最多同时接取 2 条未结束任务。');
@@ -101,7 +106,7 @@ export function useAppActions(isLatest: Ref<boolean>) {
     state.账号.爱心.托管 += escrow;
     state.心愿社.我发布的[id] = { ...task, 状态: '招募中', 托管爱心: escrow, 接取者: {} };
     state.心愿社.任务大厅[id] = {
-      发布者: state.主角.姓名, 发布者等级: state.账号._论坛等级, ...task, 已接人数: 0, 状态: '可接取', 回复: {},
+      发布者: userName(), 发布者等级: state.账号._论坛等级, ...task, 已接人数: 0, 状态: '可接取', 回复: {},
     };
     log(`发布任务“${task.标题}”，${escrow} 爱心进入托管。`);
     notify('任务', '任务已发布', `已托管 ${escrow} 爱心，等待接取。`);
@@ -127,7 +132,7 @@ export function useAppActions(isLatest: Ref<boolean>) {
     if (!requireLatest() || !content.trim()) return false;
     const task = state.心愿社.任务大厅[taskId];
     if (!task) return false;
-    task.回复[makeId('reply')] = { 作者: state.主角.姓名, 内容: content.trim(), 时间: now() };
+    task.回复[makeId('reply')] = { 作者: userName(), 内容: content.trim(), 时间: now() };
     log(`在任务“${task.标题}”下公开回复：${content.trim()}`);
     return true;
   }
@@ -136,7 +141,7 @@ export function useAppActions(isLatest: Ref<boolean>) {
     if (!requireLatest() || !content.trim()) return false;
     const task = state.心愿社.我接取的[taskId];
     if (!task) return false;
-    task.私聊[makeId('dm')] = { 发送者: state.主角.姓名, 内容: content.trim(), 时间: now() };
+    task.私聊[makeId('dm')] = { 发送者: userName(), 内容: content.trim(), 时间: now() };
     log(`向任务“${task.标题}”的发布者发送私聊：${content.trim()}`);
     return true;
   }
@@ -216,7 +221,7 @@ export function useAppActions(isLatest: Ref<boolean>) {
     if (!form.标题.trim() || !form.正文.trim()) return void toastr.warning('请填写标题和正文。');
     const id = makeId('post');
     state.心愿社.论坛帖子[id] = {
-      作者: state.主角.姓名, 作者等级: state.账号._论坛等级, 标题: form.标题.trim(), 正文: form.正文.trim(),
+      作者: userName(), 作者等级: state.账号._论坛等级, 标题: form.标题.trim(), 正文: form.正文.trim(),
       分区: form.分区, 标签: form.标签.trim() || '随聊', 发布时间: now(), 点赞数: 0, 已点赞: false, 已收藏: false, 是否我的: true, 回复: {},
     };
     gainForumExp(10);
@@ -228,7 +233,7 @@ export function useAppActions(isLatest: Ref<boolean>) {
     if (!requireLatest() || !content.trim()) return false;
     const post = state.心愿社.论坛帖子[postId];
     if (!post) return false;
-    post.回复[makeId('forum_reply')] = { 作者: state.主角.姓名, 内容: content.trim(), 时间: now() };
+    post.回复[makeId('forum_reply')] = { 作者: userName(), 内容: content.trim(), 时间: now() };
     gainForumExp(2);
     log(`回复论坛帖子“${post.标题}”：${content.trim()}`);
     return true;

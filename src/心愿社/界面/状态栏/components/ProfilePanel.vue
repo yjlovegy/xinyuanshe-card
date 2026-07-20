@@ -6,8 +6,8 @@
     </div>
 
     <div class="account-hero">
-      <span class="large-avatar">{{ data.主角.姓名.slice(0, 1) }}</span>
-      <div><strong>{{ data.主角.姓名 }}</strong><p>上海 · 成年用户 · 论坛 Lv.{{ data.账号._论坛等级 }}</p></div>
+      <span class="large-avatar">{{ userName.slice(0, 1) }}</span>
+      <div><strong>{{ userName }}</strong><p>上海 · 成年用户 · 论坛 Lv.{{ data.账号._论坛等级 }}</p></div>
       <div class="wallet"><span>可用 <b>{{ data.账号.爱心.可用 }}</b></span><span>托管 <b>{{ data.账号.爱心.托管 }}</b></span></div>
     </div>
 
@@ -39,11 +39,13 @@
 
 <script setup lang="ts">
 import { useAppActions } from '../composables/useAppActions';
+import { resolveUserName } from '../composables/useUserName';
 import { useDataStore } from '../store';
 
 const props = defineProps<{ isLatest: boolean }>();
 const { data } = useDataStore();
 const actions = useAppActions(toRef(props, 'isLatest'));
+const userName = computed(() => resolveUserName(data.主角.姓名));
 const notices = computed(() => Object.entries(data.心愿社.通知).reverse());
 const logs = computed(() => Object.entries(data.心愿社._待处理操作日志).reverse());
 const unread = computed(() => Object.values(data.心愿社.通知).filter(item => !item.已读).length);

@@ -11,7 +11,7 @@ export const Schema = z.object({
   }),
 
   主角: z.object({
-    姓名: z.string().prefault('主角'),
+    姓名: z.string().prefault('玩家'),
     穿着: z.record(
       z.enum(['上衣', '下装', '袜子', '鞋子', '内衣', '内裤']),
       z.object({

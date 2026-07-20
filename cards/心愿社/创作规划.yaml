@@ -9,6 +9,7 @@ project:
     cdn_url: https://testingcf.jsdelivr.net/gh/yjlovegy/xinyuanshe-card@2edecb5ef12ae271315daddbbb228edabcccc988/dist/心愿社/界面/状态栏/index.html
     opening_behavior: 开场白占位符立即显示加载界面；当前楼层 stat_data 完整通过 Schema 校验后再挂载状态栏，避免 MVU 初始化竞态导致首屏空白或 ZodError。
     avatar_storage: 全身像优先保存到浏览器 IndexedDB；必须显式导入存储组合式函数，存储不可用时降级为本次会话内存，不得阻断人物面板渲染。
+    user_name_source: 人物页、账户页及平台操作署名优先读取 SillyTavern 当前的实际 <user> 名称；MVU 姓名仅作回退，旧楼层不得因显示名称同步而被改写。
 
 world:
   overview: 2026年现代社会；与现实的差异是面向成年人的任务平台“心愿社”合法公开运营，成人任务被视为正常的自愿服务。
@@ -89,6 +90,9 @@ mvu:
         ├── 通知
         └── 待处理操作日志
   variables:
+    - path: 主角.姓名
+      type: string
+      initial: <user>
     - path: 世界.当前时间
       format: YYYY年MM月DD日 HH:mm
     - path: 世界.当前位置
