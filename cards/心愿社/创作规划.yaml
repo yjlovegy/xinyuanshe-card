@@ -6,7 +6,7 @@ project:
   statusbar:
     type: Vue MVU 前端
     source_path: tavern_helper_template/src/心愿社/界面/状态栏
-    cdn_url: https://testingcf.jsdelivr.net/gh/yjlovegy/xinyuanshe-card@105af402aaf504716e96a035f1baf7386e05d46e/dist/心愿社/界面/状态栏/index.html
+    cdn_url: https://testingcf.jsdelivr.net/gh/yjlovegy/xinyuanshe-card@39dc7a8711e5368bbbd771da64f207080eab5156/dist/心愿社/界面/状态栏/index.html
     opening_behavior: 开场白占位符立即显示加载界面；当前楼层 stat_data 完整通过 Schema 校验后再挂载状态栏，避免 MVU 初始化竞态导致首屏空白或 ZodError。
     avatar_storage: 全身像优先保存到浏览器 IndexedDB；必须显式导入存储组合式函数，存储不可用时降级为本次会话内存，不得阻断人物面板渲染。
     user_name_source: 人物页、账户页及平台操作署名优先读取 SillyTavern 当前的实际 <user> 名称；MVU 姓名仅作回退，旧楼层不得因显示名称同步而被改写。
